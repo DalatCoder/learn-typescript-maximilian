@@ -12,9 +12,29 @@ if (printResult) {
   console.log(result);
 }
 
-const person: { name: string; age: number } = {
+enum Role {
+  ADMIN,
+  READ_ONLY,
+  AUTHOR,
+}
+
+const person: {
+  name: string;
+  age: number;
+  hobbies: string[];
+  role: Role;
+} = {
   name: 'Hieu',
   age: 20,
+  hobbies: ['Sport', 'Cooking'],
+  role: Role.ADMIN,
 };
 
+let colors: string[];
+colors.push('Red', 'Green', 'Blue');
+
 console.log(person);
+
+for (const hobby of person.hobbies) {
+  console.log(hobby.toUpperCase());
+}
