@@ -10,7 +10,9 @@ body {
   margin: 0;
 }
 
-label, input, textarea {
+label,
+input,
+textarea {
   display: block;
   margin: 0.5rem 0;
   font: inherit;
@@ -20,7 +22,8 @@ label, input, textarea {
   border: 1px solid #ccc;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
   background-color: #fff5f9;
 }
@@ -57,7 +60,7 @@ button:active {
 }
 
 #finished-projects {
-  border-color: #0044ff;;
+  border-color: #0044ff;
 }
 
 #finished-projects header {
@@ -76,7 +79,7 @@ button:active {
 }
 
 .projects li {
-  box-shadow: 1px px 8px rgba(0, 0, 0, 0.26);
+  box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.26);
   padding: 1rem;
   margin: 1rem;
 }
