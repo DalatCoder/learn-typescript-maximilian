@@ -1,4 +1,17 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -85,17 +98,40 @@ function autobind(target, methodName, descriptior) {
     };
     return adjDescriptor;
 }
-// ProjectList class
-var ProjectList = /** @class */ (function () {
-    function ProjectList(type) {
-        var _this = this;
-        this.type = type;
-        this.assignedProjects = [];
-        this.templateElement = document.getElementById('project-list');
-        this.hostElement = document.getElementById('app');
+// Component Base Class
+// Class only use for inheritance, not to instantiate
+var Component = /** @class */ (function () {
+    function Component(templateId, hostElementId, insertAtStart, newElementId) {
+        this.templateElement = document.getElementById(templateId);
+        this.hostElement = document.getElementById(hostElementId);
         var importedNode = document.importNode(this.templateElement.content, true);
         this.element = importedNode.firstElementChild;
-        this.element.id = this.type + "-projects";
+        if (newElementId) {
+            this.element.id = newElementId;
+        }
+        this.attach(insertAtStart);
+    }
+    Component.prototype.attach = function (insertAtBeginning) {
+        var position = insertAtBeginning
+            ? 'afterbegin'
+            : 'beforeend';
+        this.hostElement.insertAdjacentElement(position, this.element);
+    };
+    return Component;
+}());
+// ProjectList class
+var ProjectList = /** @class */ (function (_super) {
+    __extends(ProjectList, _super);
+    function ProjectList(type) {
+        var _this = _super.call(this, 'project-list', 'app', false, type + "-projects") || this;
+        _this.type = type;
+        _this.assignedProjects = [];
+        _this.configure();
+        _this.renderContent();
+        return _this;
+    }
+    ProjectList.prototype.configure = function () {
+        var _this = this;
         projectState.addListener(function (projects) {
             var relevantProjects = projects.filter(function (project) {
                 if (_this.type === 'active') {
@@ -106,9 +142,13 @@ var ProjectList = /** @class */ (function () {
             _this.assignedProjects = relevantProjects;
             _this.renderProjects();
         });
-        this.attach();
-        this.renderContent();
-    }
+    };
+    ProjectList.prototype.renderContent = function () {
+        var listId = this.type + "-projects-list";
+        this.element.querySelector('ul').id = listId;
+        this.element.querySelector('h2').textContent =
+            this.type.toUpperCase() + ' PROJECTS';
+    };
     ProjectList.prototype.renderProjects = function () {
         var listEl = document.getElementById(this.type + "-projects-list");
         listEl.innerHTML = '';
@@ -119,30 +159,22 @@ var ProjectList = /** @class */ (function () {
             listEl.appendChild(listItem);
         }
     };
-    ProjectList.prototype.renderContent = function () {
-        var listId = this.type + "-projects-list";
-        this.element.querySelector('ul').id = listId;
-        this.element.querySelector('h2').textContent =
-            this.type.toUpperCase() + ' PROJECTS';
-    };
-    ProjectList.prototype.attach = function () {
-        this.hostElement.insertAdjacentElement('beforeend', this.element);
-    };
     return ProjectList;
-}());
-var ProjectInput = /** @class */ (function () {
+}(Component));
+var ProjectInput = /** @class */ (function (_super) {
+    __extends(ProjectInput, _super);
     function ProjectInput() {
-        this.templateElement = document.getElementById('project-input');
-        this.hostElement = document.getElementById('app');
-        var importedNode = document.importNode(this.templateElement.content, true);
-        this.element = importedNode.firstElementChild;
-        this.element.id = 'user-input';
-        this.titleInputElement = this.element.querySelector('#title');
-        this.descriptionInputElement = this.element.querySelector('#description');
-        this.peopleInputElement = this.element.querySelector('#people');
-        this.configure();
-        this.attach();
+        var _this = _super.call(this, 'project-input', 'app', true, 'user-input') || this;
+        _this.titleInputElement = _this.element.querySelector('#title');
+        _this.descriptionInputElement = _this.element.querySelector('#description');
+        _this.peopleInputElement = _this.element.querySelector('#people');
+        _this.configure();
+        return _this;
     }
+    ProjectInput.prototype.configure = function () {
+        this.element.addEventListener('submit', this.submitHandler);
+    };
+    ProjectInput.prototype.renderContent = function () { };
     ProjectInput.prototype.gatherUserInput = function () {
         var enteredTitle = this.titleInputElement.value;
         var enteredDescription = this.descriptionInputElement.value;
@@ -184,17 +216,11 @@ var ProjectInput = /** @class */ (function () {
             this.clearInputs();
         }
     };
-    ProjectInput.prototype.configure = function () {
-        this.element.addEventListener('submit', this.submitHandler);
-    };
-    ProjectInput.prototype.attach = function () {
-        this.hostElement.insertAdjacentElement('afterbegin', this.element);
-    };
     __decorate([
         autobind
     ], ProjectInput.prototype, "submitHandler", null);
     return ProjectInput;
-}());
+}(Component));
 var projectInput = new ProjectInput();
 var activeProjectList = new ProjectList('active');
 var finishedProjectList = new ProjectList('finished');
