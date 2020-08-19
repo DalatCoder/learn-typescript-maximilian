@@ -54,3 +54,24 @@ const numberStorage = new DataStorage<number>();
 
 // const objStorage = new DataStorage<object>();
 // Error when remove an object
+
+interface CourseGoal {
+  title: string;
+  description: string;
+  date: Date;
+}
+
+function createCourseGoal(
+  title: string,
+  description: string,
+  date: Date
+): CourseGoal {
+  let courseGoal: Partial<CourseGoal> = {};
+  courseGoal.date = date;
+  courseGoal.title = title;
+  courseGoal.description = description;
+
+  return courseGoal as CourseGoal;
+}
+
+const names: Readonly<string[]> = ['Hieu', 'Ha'];
