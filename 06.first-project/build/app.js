@@ -5,7 +5,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-// Project State Management
+// Project type
+var ProjectStatus;
+(function (ProjectStatus) {
+    ProjectStatus[ProjectStatus["Active"] = 0] = "Active";
+    ProjectStatus[ProjectStatus["Finished"] = 1] = "Finished";
+})(ProjectStatus || (ProjectStatus = {}));
+var Project = /** @class */ (function () {
+    function Project(id, title, description, people, status) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.people = people;
+        this.status = status;
+    }
+    return Project;
+}());
 var ProjectState = /** @class */ (function () {
     function ProjectState() {
         this.listeners = [];
@@ -22,12 +37,7 @@ var ProjectState = /** @class */ (function () {
         this.listeners.push(listenerFn);
     };
     ProjectState.prototype.addProject = function (title, description, numOfPeople) {
-        var newProject = {
-            id: Math.random().toString(),
-            title: title,
-            description: description,
-            people: numOfPeople,
-        };
+        var newProject = new Project(Math.random().toString(), title, description, numOfPeople, ProjectStatus.Active);
         this.projects.push(newProject);
         for (var _i = 0, _a = this.listeners; _i < _a.length; _i++) {
             var listenerFn = _a[_i];
@@ -36,7 +46,7 @@ var ProjectState = /** @class */ (function () {
     };
     return ProjectState;
 }());
-// Single-ton patter, only 1 instance of project state exists
+// Singleton pattern, only one instance of project state exists
 var projectState = ProjectState.getInstace();
 function validate(validatableInput) {
     var isValid = true;
@@ -96,10 +106,10 @@ var ProjectList = /** @class */ (function () {
     ProjectList.prototype.renderProjects = function () {
         var listEl = document.getElementById(this.type + "-projects-list");
         for (var _i = 0, _a = this.assignedProjects; _i < _a.length; _i++) {
-            var prjItem = _a[_i];
+            var project = _a[_i];
             var listItem = document.createElement('li');
-            listItem.textContent = prjItem.title;
-            listEl === null || listEl === void 0 ? void 0 : listEl.appendChild(listItem);
+            listItem.textContent = project.title;
+            listEl.appendChild(listItem);
         }
     };
     ProjectList.prototype.renderContent = function () {
