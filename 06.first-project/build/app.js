@@ -10,16 +10,22 @@ function validate(validatableInput) {
     if (validatableInput.required) {
         isValid = isValid && validatableInput.value.toString().trim().length !== 0;
     }
-    if (validatableInput.minLength != null && typeof validatableInput.value === 'string') {
-        isValid = isValid && validatableInput.value.length >= validatableInput.minLength;
+    if (validatableInput.minLength != null &&
+        typeof validatableInput.value === 'string') {
+        isValid =
+            isValid && validatableInput.value.length >= validatableInput.minLength;
     }
-    if (validatableInput.maxLength != null && typeof validatableInput.value === 'string') {
-        isValid = isValid && validatableInput.value.length <= validatableInput.maxLength;
+    if (validatableInput.maxLength != null &&
+        typeof validatableInput.value === 'string') {
+        isValid =
+            isValid && validatableInput.value.length <= validatableInput.maxLength;
     }
-    if (validatableInput.min != null && typeof validatableInput.value === 'number') {
+    if (validatableInput.min != null &&
+        typeof validatableInput.value === 'number') {
         isValid = isValid && validatableInput.value >= validatableInput.min;
     }
-    if (validatableInput.max != null && typeof validatableInput.value === 'number') {
+    if (validatableInput.max != null &&
+        typeof validatableInput.value === 'number') {
         isValid = isValid && validatableInput.value <= validatableInput.max;
     }
     return isValid;
@@ -32,10 +38,33 @@ function autobind(target, methodName, descriptior) {
         get: function () {
             var boundFn = originalMethod.bind(this);
             return boundFn;
-        }
+        },
     };
     return adjDescriptor;
 }
+// ProjectList class
+var ProjectList = /** @class */ (function () {
+    function ProjectList(type) {
+        this.type = type;
+        this.templateElement = document.getElementById('project-list');
+        this.hostElement = document.getElementById('app');
+        var importedNode = document.importNode(this.templateElement.content, true);
+        this.element = importedNode.firstElementChild;
+        this.element.id = this.type + "-projects";
+        this.attach();
+        this.renderContent();
+    }
+    ProjectList.prototype.renderContent = function () {
+        var listId = this.type + "-projects-list";
+        this.element.querySelector('ul').id = listId;
+        this.element.querySelector('h2').textContent =
+            this.type.toUpperCase() + ' PROJECTS';
+    };
+    ProjectList.prototype.attach = function () {
+        this.hostElement.insertAdjacentElement('beforeend', this.element);
+    };
+    return ProjectList;
+}());
 var ProjectInput = /** @class */ (function () {
     function ProjectInput() {
         this.templateElement = document.getElementById('project-input');
@@ -55,20 +84,22 @@ var ProjectInput = /** @class */ (function () {
         var enteredPeople = this.peopleInputElement.value;
         var titleValidatable = {
             value: enteredTitle,
-            required: true
+            required: true,
         };
         var descriptionValidatable = {
             value: enteredDescription,
             required: true,
-            minLength: 5
+            minLength: 5,
         };
         var peopleValidatable = {
             value: +enteredPeople,
             required: true,
             min: 1,
-            max: 5
+            max: 5,
         };
-        if (!validate(titleValidatable) || !validate(descriptionValidatable) || !validate(peopleValidatable)) {
+        if (!validate(titleValidatable) ||
+            !validate(descriptionValidatable) ||
+            !validate(peopleValidatable)) {
             alert('Invalid input, please try again!');
             return;
         }
@@ -100,3 +131,5 @@ var ProjectInput = /** @class */ (function () {
     return ProjectInput;
 }());
 var projectInput = new ProjectInput();
+var activeProjectList = new ProjectList('active');
+var finishedProjectList = new ProjectList('finished');
