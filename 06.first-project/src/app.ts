@@ -15,14 +15,22 @@ class Project {
 }
 
 // Project State Management
-type Listener = (projects: Project[]) => void;
+type Listener<TData> = (items: TData[]) => void;
 
-class ProjectState {
-  private listeners: Listener[] = [];
+abstract class State<TData> {
+  protected listeners: Listener<TData>[] = [];
+  addListener(listenerFn: Listener<TData>) {
+    this.listeners.push(listenerFn);
+  }
+}
+
+class ProjectState extends State<Project> {
   private projects: Project[] = [];
   private static instance: ProjectState;
 
-  private constructor() {}
+  private constructor() {
+    super();
+  }
 
   static getInstace() {
     if (this.instance) {
@@ -31,10 +39,6 @@ class ProjectState {
 
     this.instance = new ProjectState();
     return this.instance;
-  }
-
-  addListener(listenerFn: Listener) {
-    this.listeners.push(listenerFn);
   }
 
   addProject(title: string, description: string, numOfPeople: number) {

@@ -34,10 +34,21 @@ var Project = /** @class */ (function () {
     }
     return Project;
 }());
-var ProjectState = /** @class */ (function () {
-    function ProjectState() {
+var State = /** @class */ (function () {
+    function State() {
         this.listeners = [];
-        this.projects = [];
+    }
+    State.prototype.addListener = function (listenerFn) {
+        this.listeners.push(listenerFn);
+    };
+    return State;
+}());
+var ProjectState = /** @class */ (function (_super) {
+    __extends(ProjectState, _super);
+    function ProjectState() {
+        var _this = _super.call(this) || this;
+        _this.projects = [];
+        return _this;
     }
     ProjectState.getInstace = function () {
         if (this.instance) {
@@ -45,9 +56,6 @@ var ProjectState = /** @class */ (function () {
         }
         this.instance = new ProjectState();
         return this.instance;
-    };
-    ProjectState.prototype.addListener = function (listenerFn) {
-        this.listeners.push(listenerFn);
     };
     ProjectState.prototype.addProject = function (title, description, numOfPeople) {
         var newProject = new Project(Math.random().toString(), title, description, numOfPeople, ProjectStatus.Active);
@@ -58,7 +66,7 @@ var ProjectState = /** @class */ (function () {
         }
     };
     return ProjectState;
-}());
+}(State));
 // Singleton pattern, only one instance of project state exists
 var projectState = ProjectState.getInstace();
 function validate(validatableInput) {
